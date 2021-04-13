@@ -96,9 +96,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 		int32 chunkYindex;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-		float biomes_noise_value;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float xMult = 1;
 
