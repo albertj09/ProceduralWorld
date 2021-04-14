@@ -166,6 +166,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
 		TArray<FVector> _FallingLeavesLocations;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
+		TArray<FVector> _WindEffectLocations;
+
 	UFUNCTION(BlueprintCallable, Category = "VoxelActor/Functions")
 		bool CheckGeneratedStatus();
 
@@ -174,6 +177,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables/")
 		FNoiseParameter biomes_noise_settings;
+
 
 };
 
@@ -186,11 +190,13 @@ protected:
 	TArray<FVector>& _GrassLocations;
 	TArray<FVector>& _FlowerLocations;
 	TArray<FVector>& _FallingLeavesLocations;
+	TArray<FVector>& _WindEffectLocations;
+
 
 	void SetupNoise();
 
 	void SetupBiomesNoise();
-	
+
 	void GenerateChunk();
 
 	void UpdateMesh();
@@ -201,8 +207,8 @@ protected:
 	
 
 public:
-	ExecuteOnOtherThread(bool& IsGenerated, TArray<FMeshSection> &MeshSections, TArray<FVector> &GrassLocations, TArray<FVector>& FlowerLocations, TArray<FVector>& FallingLeavesLocations, AVoxelActor* Chunk)
-		: _IsGenerated(IsGenerated), _MeshSections(MeshSections), _GrassLocations(GrassLocations), _FlowerLocations(FlowerLocations), _FallingLeavesLocations(FallingLeavesLocations), _Chunk(Chunk) {}
+	ExecuteOnOtherThread(bool& IsGenerated, TArray<FMeshSection> &MeshSections, TArray<FVector> &GrassLocations, TArray<FVector>& FlowerLocations, TArray<FVector>& FallingLeavesLocations, TArray<FVector>& WindEffectLocations, AVoxelActor* Chunk)
+		: _IsGenerated(IsGenerated), _MeshSections(MeshSections), _GrassLocations(GrassLocations), _FlowerLocations(FlowerLocations), _FallingLeavesLocations(FallingLeavesLocations), _WindEffectLocations(WindEffectLocations), _Chunk(Chunk) {}
 
 	FORCEINLINE TStatId GetStatId() const {
 		RETURN_QUICK_DECLARE_CYCLE_STAT(ExecuteOnOtherThread, STATGROUP_ThreadPoolAsyncTasks);

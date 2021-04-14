@@ -27,9 +27,9 @@ AVoxelActor::AVoxelActor()
 {
 	PrimaryActorTick.bCanEverTick = false;
 
-	_Noise = CreateDefaultSubobject<UFastNoiseWrapper>(TEXT("Noise"));
+	_Noise = CreateDefaultSubobject<UFastNoiseWrapper>(TEXT("Noise"));		//DEFAULT NOISE FOR STANDARD TERRAIN
 
-	_Noise2 = CreateDefaultSubobject<UFastNoiseWrapper>(TEXT("Noise2"));
+	_Noise2 = CreateDefaultSubobject<UFastNoiseWrapper>(TEXT("Noise2"));	//NOISE FOR BIOME RANGES
 
 
 }
@@ -124,17 +124,20 @@ void ExecuteOnOtherThread::GenerateChunk() {
 	
 	//BIOMES NUMERATION CODE
 	
-	//0 - OAK FOREST
-	if (_Chunk->biome_noise_value >= 0.35 && _Chunk->biome_noise_value < 0.55) {
+	//0 - OAK FOREST (DEFAULT)
+	if (_Chunk->biome_noise_value >= 0.35 && _Chunk->biome_noise_value < 0.65) {
 		biome = 0;
 	}
 	//1 - GRASSLANDS
-	else if(_Chunk->biome_noise_value >= 0 && _Chunk->biome_noise_value < 0.35){
+	else if(_Chunk->biome_noise_value >= 0.2 && _Chunk->biome_noise_value < 0.35){
 		biome = 1;
 	}
-	//2 - BIRCH FOREST
-	else {
+	//2 - TALL FOREST
+	else if (_Chunk->biome_noise_value >= 0.65 && _Chunk->biome_noise_value < 0.75){
 		biome = 2;
+	}
+	else {	//DEFAULT
+		biome = 0;
 	}
 	 
 	//Calculate noise for terrain generation 
@@ -146,22 +149,22 @@ void ExecuteOnOtherThread::GenerateChunk() {
 			for (int32 z = 0; z < _Chunk->chunkZElements; z++) {
 						
 				int32 index = x + (y * _Chunk->chunkLineElementsExt) + (z * _Chunk->chunkLineElementsP2Ext);
-				if (x + y * _Chunk->chunkLineElementsExt < noise.Num()) {
+				//if (x + y * _Chunk->chunkLineElementsExt < noise.Num()) {
 
-					if (z == 30 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-						_Chunk->chunkFields[index] = 11;	//GRASS
-					}
-					else if (z == 29 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-						_Chunk->chunkFields[index] = 12;	//DIRT
-					}
-					else if (z < 29 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-						_Chunk->chunkFields[index] = 13;	//STONE
-					}
-					else {
-						_Chunk->chunkFields[index] = 0;		//EMPTY SPACE
-					}
-
+				if (z == 30 + noise[x + y * _Chunk->chunkLineElementsExt]) {
+					_Chunk->chunkFields[index] = 11;	//GRASS
 				}
+				else if (z == 29 + noise[x + y * _Chunk->chunkLineElementsExt]) {
+					_Chunk->chunkFields[index] = 12;	//DIRT
+				}
+				else if (z < 29 + noise[x + y * _Chunk->chunkLineElementsExt]) {
+					_Chunk->chunkFields[index] = 13;	//STONE
+				}
+				else {
+					_Chunk->chunkFields[index] = 0;		//EMPTY SPACE
+				}
+
+				//}
 
 			}
 		}
@@ -174,7 +177,12 @@ void ExecuteOnOtherThread::GenerateChunk() {
 			for (int32 z = 2; z < _Chunk->chunkZElements; z++) {
 
 				int32 index = x + (y * _Chunk->chunkLineElementsExt) + (z * _Chunk->chunkLineElementsP2Ext);
-
+				//Wind effect locations 
+				if (RandomStream.FRand() < 0.01 && z == 31 + noise[x + y * _Chunk->chunkLineElementsExt]) {
+					if (z * _Chunk->VoxelSize > (1430.0f - _Chunk->VoxelSize)) {	//Make sure that the wind doesn't spawn below water level
+						_WindEffectLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
+					}
+				}
 
 				//Adjust probabilities of instances depending on the biome of the chunk
 
@@ -184,10 +192,10 @@ void ExecuteOnOtherThread::GenerateChunk() {
 					grass_probability = 0.1;
 				}
 				else if (biome == 1) {	//GRASSLANDS
-					grass_probability = 0.2;
+					grass_probability = 0.3;
 				}
-				else if (biome == 2) {	//BIRCH FOREST
-					grass_probability = 0.1;
+				else if (biome == 2) {	//TALL FOREST
+					grass_probability = 0.2;
 				}
 
 				//Add grass instances based on the probability
@@ -201,9 +209,9 @@ void ExecuteOnOtherThread::GenerateChunk() {
 					flower_probability = 0.1;
 				}
 				else if (biome == 1) {	//GRASSLANDS
-					flower_probability = 0.2;
+					flower_probability = 0.3;
 				}
-				else if (biome == 2) {	//BIRCH FOREST
+				else if (biome == 2) {	//TALL FOREST
 					flower_probability = 0.1;
 				}
 				
@@ -218,10 +226,10 @@ void ExecuteOnOtherThread::GenerateChunk() {
 					tree_probability = 0.01;
 				}
 				else if (biome == 1) {	//GRASSLANDS
-					tree_probability = 0.004;
+					tree_probability = 0.001;
 				}
-				else if (biome == 2) {	//BIRCH FOREST
-					tree_probability = 0.01;
+				else if (biome == 2) {	//TALL FOREST
+					tree_probability = 0.015;
 				}
 
 				//Add tree and falling leaves instances based on the probability
@@ -245,10 +253,12 @@ void ExecuteOnOtherThread::GenerateChunk() {
 	int32 tree_num = 0;
 
 	for (FIntVector treeCenter : treeCenters) {
-		int32 tree_height = RandomStream.RandRange(3, 12);
-		int32 randomX = RandomStream.RandRange(0, 3);
-		int32 randomY = RandomStream.RandRange(0, 3);
-		int32 randomZ = RandomStream.RandRange(0, 3);
+
+		
+		int32 tree_height = (biome == 2 ? RandomStream.RandRange(6, 13) : RandomStream.RandRange(3, 9));
+		int32 randomX = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
+		int32 randomY = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
+		int32 randomZ = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
 
 		
 
@@ -259,7 +269,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 					if (inRange(tree_x + treeCenter.X + 1, _Chunk->chunkLineElements + 1) && inRange(tree_y + treeCenter.Y + 1, _Chunk->chunkLineElements + 1) && inRange(tree_z + treeCenter.Z, _Chunk->chunkZElements)) {
 						float radius = FVector(tree_x * randomX, tree_y * randomY, tree_z * randomZ).Size();
 
-						if (radius <= 4.0) {
+						if (radius <= (tree_height > 4 ? 4.3 : 4.0)) {
 							if (RandomStream.FRand() < 0.5 || radius < 0.8) {
 								_Chunk->chunkFields[treeCenter.X + tree_x + (_Chunk->chunkLineElementsExt * (treeCenter.Y + tree_y)) + (_Chunk->chunkLineElementsP2Ext * (treeCenter.Z + tree_z + tree_height))] = 1;	//LEAVES MATERIAL
 							}
@@ -270,9 +280,12 @@ void ExecuteOnOtherThread::GenerateChunk() {
 			}
 		}
 		
+		//cycle randomly between oak and birch material to get some nice variation
+		int32 treeType = (RandomStream.FRand() < 0.2 ? 15 : 14);
+
 		//tree trunk
 		for (int32 h = 0; h < tree_height; h++) {
-			_Chunk->chunkFields[treeCenter.X + (treeCenter.Y * _Chunk->chunkLineElementsExt) + ((treeCenter.Z + h) * _Chunk->chunkLineElementsP2Ext)] = (biome == 2 ? 15 : 14);		//BIRCH OR OAK DEPENDING ON THE BIOME
+			_Chunk->chunkFields[treeCenter.X + (treeCenter.Y * _Chunk->chunkLineElementsExt) + ((treeCenter.Z + h) * _Chunk->chunkLineElementsP2Ext)] = treeType;		//BIRCH OR OAK
 		}
 
 		//adjust the height of the falling leaves effects per each tree, so the effect will be sourced from somewhere around the leaves area
@@ -314,21 +327,21 @@ void ExecuteOnOtherThread::UpdateMesh() {
 					for (int i = 0; i < 6; i++)
 					{
 						int newIndex = index + bMask[i].X + (bMask[i].Y * _Chunk->chunkLineElementsExt) + (bMask[i].Z * _Chunk->chunkLineElementsP2Ext);
-						bool flag = false;	//should be FALSE!!!!!!!!!!!!!!!!!
+
+
+						bool flag = false;	//should be false to prevent all sides of every cube getting rendered
 
 
 						if (meshIndex >= 20) {
 							flag = true;
 						}
-						//else if ((x + bMask[i].X < chunkLineElements) && (x + bMask[i].X >= 0) && (y + bMask[i].Y < chunkLineElements) && (y + bMask[i].Y >= 0) /*&& (z + bMask[i].Z >= 0) && (z + bMask[i].Z < chunkZElements)*/)
-						//{
+						
 						else if (newIndex < _Chunk->chunkFields.Num() && newIndex >= 0) {
 							if (_Chunk->chunkFields[newIndex] < 10) flag = true;
 						}
 						//}
-						/*else {
-							flag = true;
-						} */
+						
+						
 
 						if (flag)
 						{
@@ -468,13 +481,14 @@ TArray<int32> ExecuteOnOtherThread::calculateNoise(int currentBiome) {
 	for (int32 y = -1; y <= _Chunk->chunkLineElements; y++) {
 		for (int32 x = -1; x <= _Chunk->chunkLineElements; x++) {
 
-			float noiseValue = _Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 4 +
+			//DEFAULT TERRAIN NOISE
+			float noiseValueBiome_Default = _Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 4 +
 				_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 8 +
 				_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.004f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.004f) * 16 +
 				FMath::Clamp(_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.05f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.05f), 0.0f, 5.0f) * 4 +
 				FMath::Clamp(_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.07f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.07f), 0.0f, 0.5f) * 2;
 
-			noises.Add(FMath::FloorToInt(noiseValue));
+			noises.Add(FMath::FloorToInt(noiseValueBiome_Default));
 
 
 		}
@@ -496,7 +510,7 @@ void ExecuteOnOtherThread::DoWork() {
 
 void AVoxelActor::StartGeneration() {
 	//Start the parallel thread to do all of our chunk generations and calculations for the voxels
-	(new FAutoDeleteAsyncTask<ExecuteOnOtherThread>(_IsGenerated, _MeshSections, _GrassLocations, _FlowerLocations, _FallingLeavesLocations ,this))->StartBackgroundTask();
+	(new FAutoDeleteAsyncTask<ExecuteOnOtherThread>(_IsGenerated, _MeshSections, _GrassLocations, _FlowerLocations, _FallingLeavesLocations, _WindEffectLocations, this))->StartBackgroundTask();
 }
 
 

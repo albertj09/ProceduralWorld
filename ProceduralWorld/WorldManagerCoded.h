@@ -54,19 +54,19 @@ public:
 
 	DECLARE_DYNAMIC_DELEGATE(FSpawnObjectFunction);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Miroika - MarchingCubes/Manager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")
 		TArray<AVoxelActor*>	_WaitingChunkList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Miroika - MarchingCubes/Manager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")
 		TArray<AVoxelActor*>	_ChunkList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Miroika - MarchingCubes/Manager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")
 		TArray<AActor*>	_WaterPlaneList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Miroika - MarchingCubes/Manager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")
 		TArray<AActor*>	_FallingLeavesEffectList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Miroika - MarchingCubes/Manager")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")
 		TArray<AActor*>	_WindEffectList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Settings/")
