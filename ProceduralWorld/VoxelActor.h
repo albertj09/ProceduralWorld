@@ -96,21 +96,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 		int32 chunkYindex;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float xMult = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float yMult = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float zMult = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float weight = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float freq = 1;
-
 	UPROPERTY()
 		int32 chunkLineElementsExt;
 
@@ -178,7 +163,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables/")
 		FNoiseParameter biomes_noise_settings;
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
+		float lowest_noise;
 };
 
 class ExecuteOnOtherThread : public FNonAbandonableTask {
@@ -204,6 +190,7 @@ protected:
 	bool inRange(int32 value, int32 range);
 
 	TArray<int32> calculateNoise(int currentBiome);
+
 	
 
 public:

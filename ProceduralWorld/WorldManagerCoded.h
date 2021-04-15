@@ -52,6 +52,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Settings/")
 	TArray<FVector2D> chunkCoordinates;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Settings/")
+		TArray<FVector2D> WaterPlaneCoordinates;
+
 	DECLARE_DYNAMIC_DELEGATE(FSpawnObjectFunction);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WorldManagerCoded/Variables/")

@@ -142,7 +142,10 @@ void ExecuteOnOtherThread::GenerateChunk() {
 	 
 	//Calculate noise for terrain generation 
 	TArray<int32> noise = calculateNoise(biome);
+	
+	
 
+	TArray<float> ground_location_points;
 
 	for (int32 x = 0; x < _Chunk->chunkLineElementsExt; x++) {
 		for (int32 y = 0; y < _Chunk->chunkLineElementsExt; y++) {
@@ -153,6 +156,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				if (z == 30 + noise[x + y * _Chunk->chunkLineElementsExt]) {
 					_Chunk->chunkFields[index] = 11;	//GRASS
+					ground_location_points.Add(z * _Chunk->VoxelSize);
 				}
 				else if (z == 29 + noise[x + y * _Chunk->chunkLineElementsExt]) {
 					_Chunk->chunkFields[index] = 12;	//DIRT
@@ -163,12 +167,22 @@ void ExecuteOnOtherThread::GenerateChunk() {
 				else {
 					_Chunk->chunkFields[index] = 0;		//EMPTY SPACE
 				}
+				
 
 				//}
 
 			}
 		}
 	}
+
+	float smallest = ground_location_points[0];
+	for (auto height_point : ground_location_points) {
+		if (height_point < smallest) {
+			smallest = height_point;
+		}
+	}
+
+	_Chunk->lowest_noise = smallest;
 
 
 	//Range for the instances of trees and other foliage
@@ -269,7 +283,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 					if (inRange(tree_x + treeCenter.X + 1, _Chunk->chunkLineElements + 1) && inRange(tree_y + treeCenter.Y + 1, _Chunk->chunkLineElements + 1) && inRange(tree_z + treeCenter.Z, _Chunk->chunkZElements)) {
 						float radius = FVector(tree_x * randomX, tree_y * randomY, tree_z * randomZ).Size();
 
-						if (radius <= (tree_height > 4 ? 4.3 : 4.0)) {
+						if (radius <= (tree_height > 4 ? 4.3 : 2.8)) {
 							if (RandomStream.FRand() < 0.5 || radius < 0.8) {
 								_Chunk->chunkFields[treeCenter.X + tree_x + (_Chunk->chunkLineElementsExt * (treeCenter.Y + tree_y)) + (_Chunk->chunkLineElementsP2Ext * (treeCenter.Z + tree_z + tree_height))] = 1;	//LEAVES MATERIAL
 							}
@@ -497,6 +511,8 @@ TArray<int32> ExecuteOnOtherThread::calculateNoise(int currentBiome) {
 		
 	return noises;
 }
+
+
 
 void ExecuteOnOtherThread::DoWork() {
 	_IsGenerated = false;

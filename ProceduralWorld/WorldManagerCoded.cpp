@@ -75,13 +75,14 @@ void AWorldManagerCoded::RemoveChunk() {
 			else {
 
 				_ChunkList[i]->K2_DestroyActor();
-				_WaterPlaneList[i]->K2_DestroyActor();
 				_ChunkList.RemoveAt(i);
+				_WaterPlaneList[i]->K2_DestroyActor();
 				_WaterPlaneList.RemoveAt(i);
 				chunkCoordinates.RemoveAt(i);
+				
 			}
 		}
-	}	
+	}
 }
 
 
