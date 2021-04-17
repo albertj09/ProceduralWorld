@@ -165,6 +165,13 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
 		float lowest_noise;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
+		bool neighboringChunksAreFromDifferentBiome;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VoxelActor/Variables")
+		bool neighboringChunksAreGrassland;
+
 };
 
 class ExecuteOnOtherThread : public FNonAbandonableTask {
@@ -190,6 +197,8 @@ protected:
 	bool inRange(int32 value, int32 range);
 
 	TArray<int32> calculateNoise(int currentBiome);
+
+	int getBiomeAtNoise(float noise);
 
 	
 

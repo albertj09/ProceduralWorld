@@ -107,7 +107,7 @@ void AVoxelActor::OnConstruction(const FTransform& Transform) {
 }
 
 void ExecuteOnOtherThread::GenerateChunk() {
-	
+
 	FRandomStream RandomStream = FRandomStream(_Chunk->randomSeed);
 	TArray<FIntVector> treeCenters;
 
@@ -118,30 +118,36 @@ void ExecuteOnOtherThread::GenerateChunk() {
 	SetupBiomesNoise();
 
 	//For the this current chunk, determine which biome it is in based on the noise value
-	 _Chunk->biome_noise_value = (_Chunk->_Noise2->GetNoise2D(_Chunk->chunkXindex * 0.15f, _Chunk->chunkYindex * 0.15f) - -1) / 2;	//for the biomes, I opted for the 0-1 noise value range, hence the conversion
+	_Chunk->biome_noise_value = (_Chunk->_Noise2->GetNoise2D(_Chunk->chunkXindex * 0.15f, _Chunk->chunkYindex * 0.15f) - -1) / 2;	//for the biomes, I opted for the 0-1 noise value range, hence the conversion
+	int currentChunkBiome = getBiomeAtNoise(_Chunk->biome_noise_value);
+
+	//int biome = 0;
+
+	////BIOMES NUMERATION CODE
+
+	////0 - OAK FOREST (DEFAULT)
+	//if (_Chunk->biome_noise_value >= 0.35 && _Chunk->biome_noise_value < 0.65) {
+	//	biome = 0;
+	//}
+	////1 - GRASSLANDS
+	//else if (_Chunk->biome_noise_value >= 0.2 && _Chunk->biome_noise_value < 0.35) {
+	//	biome = 1;
+	//}
+	////2 - TALL FOREST
+	//else if (_Chunk->biome_noise_value >= 0.65 && _Chunk->biome_noise_value < 0.75) {
+	//	biome = 2;
+	//}
+	//else {	//DEFAULT
+	//	biome = 0;
+	//}
+
 	
-	int biome = 0;
-	
-	//BIOMES NUMERATION CODE
-	
-	//0 - OAK FOREST (DEFAULT)
-	if (_Chunk->biome_noise_value >= 0.35 && _Chunk->biome_noise_value < 0.65) {
-		biome = 0;
-	}
-	//1 - GRASSLANDS
-	else if(_Chunk->biome_noise_value >= 0.2 && _Chunk->biome_noise_value < 0.35){
-		biome = 1;
-	}
-	//2 - TALL FOREST
-	else if (_Chunk->biome_noise_value >= 0.65 && _Chunk->biome_noise_value < 0.75){
-		biome = 2;
-	}
-	else {	//DEFAULT
-		biome = 0;
-	}
+
+	// IF NEIGHBORING CHUNKS ARE GRASSLAND
+
 	 
 	//Calculate noise for terrain generation 
-	TArray<int32> noise = calculateNoise(biome);
+	TArray<int32> noise = calculateNoise(currentChunkBiome);
 	
 	
 
@@ -202,13 +208,13 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				//----------------GRASS INSTANCES
 				float grass_probability;
-				if (biome == 0) {	//OAK FOREST
+				if (currentChunkBiome == 0) {	//OAK FOREST
 					grass_probability = 0.1;
 				}
-				else if (biome == 1) {	//GRASSLANDS
+				else if (currentChunkBiome == 1) {	//GRASSLANDS
 					grass_probability = 0.3;
 				}
-				else if (biome == 2) {	//TALL FOREST
+				else if (currentChunkBiome == 2) {	//TALL FOREST
 					grass_probability = 0.2;
 				}
 
@@ -219,13 +225,13 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				//----------------FLOWER INSTANCES
 				float flower_probability;
-				if (biome == 0) {	//OAK FOREST
+				if (currentChunkBiome == 0) {	//OAK FOREST
 					flower_probability = 0.1;
 				}
-				else if (biome == 1) {	//GRASSLANDS
+				else if (currentChunkBiome == 1) {	//GRASSLANDS
 					flower_probability = 0.3;
 				}
-				else if (biome == 2) {	//TALL FOREST
+				else if (currentChunkBiome == 2) {	//TALL FOREST
 					flower_probability = 0.1;
 				}
 				
@@ -236,13 +242,13 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				//----------------TREE LOCATIONS & FALLING LEAVES EFFECT
 				float tree_probability;
-				if (biome == 0) {	//OAK FOREST
+				if (currentChunkBiome == 0) {	//OAK FOREST
 					tree_probability = 0.01;
 				}
-				else if (biome == 1) {	//GRASSLANDS
+				else if (currentChunkBiome == 1) {	//GRASSLANDS
 					tree_probability = 0.001;
 				}
-				else if (biome == 2) {	//TALL FOREST
+				else if (currentChunkBiome == 2) {	//TALL FOREST
 					tree_probability = 0.015;
 				}
 
@@ -269,10 +275,10 @@ void ExecuteOnOtherThread::GenerateChunk() {
 	for (FIntVector treeCenter : treeCenters) {
 
 		
-		int32 tree_height = (biome == 2 ? RandomStream.RandRange(6, 13) : RandomStream.RandRange(3, 9));
-		int32 randomX = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
-		int32 randomY = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
-		int32 randomZ = (biome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
+		int32 tree_height = (currentChunkBiome == 2 ? RandomStream.RandRange(6, 13) : RandomStream.RandRange(3, 9));
+		int32 randomX = (currentChunkBiome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
+		int32 randomY = (currentChunkBiome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
+		int32 randomZ = (currentChunkBiome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
 
 		
 
@@ -490,19 +496,19 @@ TArray<int32> ExecuteOnOtherThread::calculateNoise(int currentBiome) {
 	noises.Reserve(_Chunk->chunkLineElementsExt * _Chunk->chunkLineElementsExt);
 
 	SetupNoise();
-
+	
 	
 	for (int32 y = -1; y <= _Chunk->chunkLineElements; y++) {
 		for (int32 x = -1; x <= _Chunk->chunkLineElements; x++) {
 
 			//DEFAULT TERRAIN NOISE
-			float noiseValueBiome_Default = _Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 4 +
+			float noiseValue = _Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 4 +
 				_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.01f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.01f) * 8 +
 				_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.004f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.004f) * 16 +
 				FMath::Clamp(_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.05f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.05f), 0.0f, 5.0f) * 4 +
 				FMath::Clamp(_Chunk->_Noise->GetNoise2D((_Chunk->chunkXindex * _Chunk->chunkLineElements + x) * 0.07f, (_Chunk->chunkYindex * _Chunk->chunkLineElements + y) * 0.07f), 0.0f, 0.5f) * 2;
 
-			noises.Add(FMath::FloorToInt(noiseValueBiome_Default));
+			noises.Add(FMath::FloorToInt(noiseValue));
 
 
 		}
@@ -572,6 +578,32 @@ void ExecuteOnOtherThread::SetupBiomesNoise() {
 		else
 			UE_LOG(LogTemp, Warning, TEXT("Biomes noise can't be initialized"));
 	}
+
+}
+
+int ExecuteOnOtherThread::getBiomeAtNoise(float noise) {
+
+	int biome = 0;
+
+	//BIOMES NUMERATION CODE
+
+	//0 - OAK FOREST (DEFAULT)
+	if (noise >= 0.35 && noise < 0.65) {
+		biome = 0;
+	}
+	//1 - GRASSLANDS
+	else if (noise >= 0.2 && noise < 0.35) {
+		biome = 1;
+	}
+	//2 - TALL FOREST
+	else if (noise >= 0.65 && noise < 0.75) {
+		biome = 2;
+	}
+	else {	//DEFAULT
+		biome = 0;
+	}
+
+	return biome;
 
 }
 
