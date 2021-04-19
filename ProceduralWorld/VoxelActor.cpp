@@ -324,6 +324,14 @@ void ExecuteOnOtherThread::UpdateMesh() {
 	int32 element_num = 0;
 
 
+	////////////////////////////////////////////////////////
+
+	/*SOME PARTS OF THE FOLLOWING IMPLEMENTATION FOR GENERATING AND DRAWING VERTICES HAS BEEN INSPIRED FROM THE TUTORIALS PROVIDED BY TEFEL (https://www.youtube.com/c/UnrealTefel/videos)*/
+	
+	////////////////////////////////////////////////////////
+
+
+
 	for (int32 x = 0; x < _Chunk->chunkLineElements; x++) {
 		for (int32 y = 0; y < _Chunk->chunkLineElements; y++) {
 			for (int32 z = 0; z < _Chunk->chunkZElements; z++) {
