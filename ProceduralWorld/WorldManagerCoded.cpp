@@ -85,6 +85,25 @@ void AWorldManagerCoded::RemoveChunk() {
 	}
 }
 
+void AWorldManagerCoded::ManageChunksQueue() {
+	for (int32 index = 0; index < _WaitingChunkList.Num(); index++) {
+		if (IsValid(_WaitingChunkList[index])) {
+			if (_WaitingChunkList[index]->CheckGeneratedStatus()) {
+				_WaitingChunkList.RemoveAt(index);
+			}
+			else {
+
+			}
+		}
+		else {
+			_WaitingChunkList.RemoveAt(index);
+			_ChunkList.RemoveAt(index);
+		}
+	}
+	RemoveChunk();	
+}
+
+
 
 
 

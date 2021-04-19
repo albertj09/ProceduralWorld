@@ -99,5 +99,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "WorldManagerCoded/Functions/")
 		bool UpdatePosition();
 
+	UFUNCTION(BlueprintCallable, Category = "WorldManagerCoded/Functions/")
+		void ManageChunksQueue();
+
+
 
 };
