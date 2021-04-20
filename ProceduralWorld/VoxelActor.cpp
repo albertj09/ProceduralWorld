@@ -220,7 +220,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				//Add grass instances based on the probability
 				if (RandomStream.FRand() < grass_probability && z == 31 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-					_GrassLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
+					_Chunk->chunkFields[index] = -1;
 				}
 
 				//----------------FLOWER INSTANCES
@@ -237,7 +237,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 				
 				//Add flower instances based on the probability
 				if (RandomStream.FRand() < flower_probability && z == 31 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-					_FlowerLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
+					_Chunk->chunkFields[index] = -2; 
 				}
 
 				//----------------TREE LOCATIONS & FALLING LEAVES EFFECT
@@ -451,6 +451,16 @@ void ExecuteOnOtherThread::UpdateMesh() {
 					}
 					element_num += triangle_num;
 					_MeshSections[meshIndex].elementID += triangle_num;
+				}
+				else if (meshIndex == -1) {
+
+				_GrassLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
+
+				}
+				else if (meshIndex == -2) {
+
+				_FlowerLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
+
 				}
 
 			}
