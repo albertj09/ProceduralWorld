@@ -220,7 +220,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 
 				//Add grass instances based on the probability
 				if (RandomStream.FRand() < grass_probability && z == 31 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-					_Chunk->chunkFields[index] = -1;
+					_GrassLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
 				}
 
 				//----------------FLOWER INSTANCES
@@ -237,7 +237,7 @@ void ExecuteOnOtherThread::GenerateChunk() {
 				
 				//Add flower instances based on the probability
 				if (RandomStream.FRand() < flower_probability && z == 31 + noise[x + y * _Chunk->chunkLineElementsExt]) {
-					_Chunk->chunkFields[index] = -2;
+					_FlowerLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
 				}
 
 				//----------------TREE LOCATIONS & FALLING LEAVES EFFECT
@@ -280,12 +280,14 @@ void ExecuteOnOtherThread::GenerateChunk() {
 		int32 randomY = (currentChunkBiome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
 		int32 randomZ = (currentChunkBiome == 2 ? RandomStream.RandRange(0, 3) : RandomStream.RandRange(0, 2));
 
-		
+		//Continues
 
 		//Configure the leaves to be dependant on the tree height, so we don't get really short trees with too many leaves which look extremely unnatural 
 		for (int32 tree_x = (tree_height > 4 ? -3 : -2); tree_x < (tree_height > 4 ? 4 : 3); tree_x++) {
 			for (int32 tree_y = (tree_height > 4 ? -3 : -2); tree_y < (tree_height > 4 ? 4 : 3); tree_y++) {
 				for (int32 tree_z = (tree_height > 4 ? -3 : -2); tree_z < (tree_height > 4 ? 4 : 3); tree_z++) {
+
+					//Continues
 					if (inRange(tree_x + treeCenter.X + 1, _Chunk->chunkLineElements + 1) && inRange(tree_y + treeCenter.Y + 1, _Chunk->chunkLineElements + 1) && inRange(tree_z + treeCenter.Z, _Chunk->chunkZElements)) {
 						float radius = FVector(tree_x * randomX, tree_y * randomY, tree_z * randomZ).Size();
 
@@ -326,7 +328,7 @@ void ExecuteOnOtherThread::UpdateMesh() {
 
 	////////////////////////////////////////////////////////
 
-	/*SOME PARTS OF THE FOLLOWING IMPLEMENTATION FOR GENERATING AND DRAWING VERTICES HAS BEEN INSPIRED FROM THE TUTORIALS PROVIDED BY TEFEL (https://www.youtube.com/c/UnrealTefel/videos)*/
+	/*SOME PARTS OF THE FOLLOWING IMPLEMENTATION FOR GENERATING AND DRAWING VERTICES HAVE BEEN INSPIRED FROM THE TUTORIALS PROVIDED BY TEFEL (https://www.youtube.com/c/UnrealTefel/videos)*/
 	
 	////////////////////////////////////////////////////////
 
@@ -354,6 +356,7 @@ void ExecuteOnOtherThread::UpdateMesh() {
 					int triangle_num = 0;
 					for (int i = 0; i < 6; i++)
 					{
+						//Continued
 						int newIndex = index + bMask[i].X + (bMask[i].Y * _Chunk->chunkLineElementsExt) + (bMask[i].Z * _Chunk->chunkLineElementsP2Ext);
 
 
@@ -450,16 +453,6 @@ void ExecuteOnOtherThread::UpdateMesh() {
 					_MeshSections[meshIndex].elementID += triangle_num;
 				}
 
-				else if (meshIndex == -1) {
-
-					_GrassLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
-
-				}
-				else if (meshIndex == -2) {
-
-					_FlowerLocations.Add(FVector(x * _Chunk->VoxelSize, y * _Chunk->VoxelSize, z * _Chunk->VoxelSize)); //Get and transform the locations into world space
-
-				}
 			}
 		}
 	}
