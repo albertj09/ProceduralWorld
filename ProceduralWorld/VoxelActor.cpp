@@ -13,14 +13,14 @@ const int32 bTriangles[] = { 2,1,0,0,3,2 };
 //const int32 bTriangles[] = { 2,3,0,0,1,2 };
 
 
-const FVector2D bUVs[] = { FVector2D(0.000000, 0.000000), FVector2D(0.00000, 1.00000), FVector2D(1.00000, 1.00000), FVector2D(1.00000, 0.000000) };
+const FVector2D bUVs[] = { FVector2D(0, 0), FVector2D(0, 1), FVector2D(1, 1), FVector2D(1, 0) };
 const FVector bNormals0[] = { FVector(0,0,1), FVector(0,0,1), FVector(0,0,1), FVector(0,0,1) };
 const FVector bNormals1[] = { FVector(0,0,-1), FVector(0,0,-1), FVector(0,0,-1), FVector(0,0,-1) };
 const FVector bNormals2[] = { FVector(0,1,0),FVector(0,1,0) ,FVector(0,1,0) ,FVector(0,1,0) };
 const FVector bNormals3[] = { FVector(0,-1,0),FVector(0,-1,0), FVector(0,-1,0), FVector(0,-1,0) };
 const FVector bNormals4[] = { FVector(1,0,0),FVector(1,0,0), FVector(1,0,0), FVector(1,0,0) };
 const FVector bNormals5[] = { FVector(-1,0,0),FVector(-1,0,0), FVector(-1,0,0), FVector(-1,0,0) };
-const FVector bMask[] = { FVector(0.00000,0.00000,1.00000),FVector(0.00000,0.00000,-1.00000) ,FVector(0.00000,1.00000,0.00000) ,FVector(0.00000,-1.00000,0.00000), FVector(1.00000,0.0000,0.00000),FVector(-1.00000,0.0000,0.00000) };
+const FVector bMask[] = { FVector(0, 0, 1),FVector(0, 0, -1),FVector(0, 1, 0),FVector(0, -1, 0), FVector(1, 0, 0),FVector(-1, 0, 0) };
 
 // Sets default values
 AVoxelActor::AVoxelActor()
